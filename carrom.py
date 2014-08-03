@@ -10,6 +10,17 @@ black = (0,0,0)
 pink = (242,4,105)
 yellow2 = (238,199,94)
 
+class Goti(pygame.sprite.Sprite):
+	def __init__(self,color,radius,x,y):
+		pygame.sprite.Sprite.__init__(self)
+		self.image = pygame.Surface([2*radius, 2*radius])
+		self.image.fill(yellow)
+		self.image.set_colorkey(yellow)
+		self.rect = self.image.get_rect()
+		self.rect.x = x-radius
+		self.rect.y = y-radius
+		pygame.draw.circle(self.image, color,(radius,radius),radius)
+
 class CarromBoard():
 	def __init__(self, width=1000, height=1000, caption="Carrom Board"):
 		pygame.init()
@@ -26,44 +37,55 @@ class CarromBoard():
 		pygame.draw.lines(self.screen, black, False, [(160,140),(830,140)],2)
 		pygame.draw.lines(self.screen, black, False, [(160,860),(830,860)],2)
 		pygame.draw.lines(self.screen, black, False, [(160,900),(830,900)],2)
-		pygame.draw.circle(self.screen, black, (160,120), 20)
-		pygame.draw.circle(self.screen, black, (160,880), 20)
-		pygame.draw.circle(self.screen, black, (830,120), 20)
-		pygame.draw.circle(self.screen, black, (830,880), 20)
+		pygame.draw.circle(self.screen, red, (160,120), 20)
+		pygame.draw.circle(self.screen, red, (160,880), 20)
+		pygame.draw.circle(self.screen, red, (830,120), 20)
+		pygame.draw.circle(self.screen, red, (830,880), 20)
 
 
 		pygame.draw.lines(self.screen, black, False, [(100,160),(100,830)],2)
 		pygame.draw.lines(self.screen, black, False, [(140,160),(140,830)],2)
 		pygame.draw.lines(self.screen, black, False, [(900,160),(900,830)],2)
 		pygame.draw.lines(self.screen, black, False, [(860,160),(860,830)],2)
-		pygame.draw.circle(self.screen, black, (120,160), 20)
-		pygame.draw.circle(self.screen, black, (120,830), 20)
-		pygame.draw.circle(self.screen, black, (880,160), 20)
-		pygame.draw.circle(self.screen, black, (880,830), 20)
+		pygame.draw.circle(self.screen, red, (120,160), 20)
+		pygame.draw.circle(self.screen, red, (120,830), 20)
+		pygame.draw.circle(self.screen, red, (880,160), 20)
+		pygame.draw.circle(self.screen, red, (880,830), 20)
 		
 		pygame.draw.circle(self.screen, black, (47,47), 30)
 		pygame.draw.circle(self.screen, black, (953,47), 30)
 		pygame.draw.circle(self.screen, black, (47,953), 30)
 		pygame.draw.circle(self.screen, black, (953,953), 30)
-		pygame.draw.circle(self.screen, pink, (500,500), 25)
-		pygame.draw.circle(self.screen, black, (500,550), 25)
-		pygame.draw.circle(self.screen, yellow2, (543,525), 25)
-		pygame.draw.circle(self.screen, black, (587,550), 25)
-		pygame.draw.circle(self.screen, yellow2, (543,575), 25)
-		pygame.draw.circle(self.screen, yellow2, (457,575), 25)
-		pygame.draw.circle(self.screen, black, (414,552), 25)
-		pygame.draw.circle(self.screen, yellow2, (457,425), 25)
-		pygame.draw.circle(self.screen, black, (500,600), 25)
-		pygame.draw.circle(self.screen, yellow2, (457,525), 25)
-		pygame.draw.circle(self.screen, black, (457,475), 25)
-		pygame.draw.circle(self.screen, black, (543,475), 25)
-		pygame.draw.circle(self.screen, yellow2, (500,450), 25)
-		pygame.draw.circle(self.screen, yellow2, (410,500), 25)
-		pygame.draw.circle(self.screen, yellow2, (590,500), 25)
-		pygame.draw.circle(self.screen, black, (412,450), 25)
-		pygame.draw.circle(self.screen, black, (585,450), 25)
-		pygame.draw.circle(self.screen, yellow2, (542,425), 25)
-		pygame.draw.circle(self.screen, black, (500,400), 25)
+
+		
+		goti_list=pygame.sprite.Group()
+		goti_list.add(Goti(black,25,500,400))
+		goti_list.add(Goti(black,25,585,450))
+		goti_list.add(Goti(black,25,412,450))
+		goti_list.add(Goti(black,25,457,475))
+		goti_list.add(Goti(black,25,500,600))
+		goti_list.add(Goti(black,25,500,550))
+		goti_list.add(Goti(black,25,587,550))
+		goti_list.add(Goti(black,25,414,552))
+		goti_list.add(Goti(yellow2,25,590,500))
+		goti_list.add(Goti(yellow2,25,410,500))
+		goti_list.add(Goti(yellow2,25,500,450))
+		goti_list.add(Goti(yellow2,25,543,475))
+		goti_list.add(Goti(yellow2,25,457,525))
+		goti_list.add(Goti(yellow2,25,542,425))
+		goti_list.add(Goti(yellow2,25,457,425))
+		goti_list.add(Goti(yellow2,25,457,575))
+		goti_list.add(Goti(yellow2,25,543,575))
+		goti_list.add(Goti(yellow2,25,543,525))
+		goti_list.add(Goti(pink,25,500,500))
+		goti_list.draw(self.screen)
+
+		block_list = pygame.sprite.Group()
+		striker = Goti(blue,28,495,880)
+		block_list.add(striker)
+		block_list.draw(self.screen)
+		
+		#pygame.draw.circle(self.screen, red, (495,880), 28)
 
 	def run(self):
 		while True:
@@ -71,10 +93,12 @@ class CarromBoard():
 	 			if event.type==QUIT:
 	 				pygame.quit()
 	 				sys.exit()
-	 		pygame.display.update()
+	 			pygame.display.update()
+	 		pygame.display.flip()
 
 def main():
     game = CarromBoard()
+
     while game.run():
         pass
 
