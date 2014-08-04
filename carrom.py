@@ -27,10 +27,11 @@ class CarromBoard():
 		self.width, self.height, self.caption = width, height, caption
 		self.screen=pygame.display.set_mode((self.width, self.height))
 	 	pygame.display.set_caption(self.caption)
-	 	self.screen.fill(yellow)
+	 	
 		self.draw()
 
 	def draw(self):
+		self.screen.fill(yellow)
 		pygame.draw.rect(self.screen,wooden,(0,0,self.width,self.height),50)
 		
 		pygame.draw.lines(self.screen, black, False, [(160,100),(830,100)],2)
@@ -67,12 +68,12 @@ class CarromBoard():
 		goti_list.add(Goti(black,25,500,550))
 		goti_list.add(Goti(black,25,587,550))
 		goti_list.add(Goti(black,25,414,552))
+		goti_list.add(Goti(black,25,542,425))
 		goti_list.add(Goti(yellow2,25,590,500))
 		goti_list.add(Goti(yellow2,25,410,500))
 		goti_list.add(Goti(yellow2,25,500,450))
 		goti_list.add(Goti(yellow2,25,543,475))
 		goti_list.add(Goti(yellow2,25,457,525))
-		goti_list.add(Goti(yellow2,25,542,425))
 		goti_list.add(Goti(yellow2,25,457,425))
 		goti_list.add(Goti(yellow2,25,457,575))
 		goti_list.add(Goti(yellow2,25,543,575))
@@ -80,13 +81,10 @@ class CarromBoard():
 		goti_list.add(Goti(pink,25,500,500))
 		goti_list.draw(self.screen)
 
-		block_list = pygame.sprite.Group()
-		striker = Goti(blue,28,495,880)
-		block_list.add(striker)
-		block_list.draw(self.screen)
+		self.striker_list = pygame.sprite.Group()
+		self.striker = Goti(blue,28,495,880)
+		self.striker_list.add(self.striker)
 		
-		#pygame.draw.circle(self.screen, red, (495,880), 28)
-
 	def run(self):
 		while True:
 	 		for event in pygame.event.get():
@@ -94,7 +92,18 @@ class CarromBoard():
 	 				pygame.quit()
 	 				sys.exit()
 	 			pygame.display.update()
+	 		self.draw()
+	 		pos = pygame.mouse.get_pos()
+	 		print pos[0]
+	 		if(pos[0]<140):
+	 			self.striker.rect.x = 140
+	 		elif(pos[0]>800):
+	 			self.striker.rect.x = 800
+	 		else:
+	 			self.striker.rect.x = pos[0]
+			self.striker_list.draw(self.screen)
 	 		pygame.display.flip()
+
 
 def main():
     game = CarromBoard()
