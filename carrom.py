@@ -11,6 +11,11 @@ pink = (242,4,105)
 yellow2 = (238,199,94)
 clock = pygame.time.Clock()
 green = (102,205,0)
+friction = 0.1
+wid = 1000
+strikerrad = 28
+border = 50
+mod = lambda v: math.sqrt(v[0] * v[0] + v[1] * v[1])
 
 class Goti(pygame.sprite.Sprite):
 	def __init__(self,color,radius,x,y):
@@ -25,11 +30,14 @@ class Goti(pygame.sprite.Sprite):
 		pygame.draw.circle(self.image, black,(radius,radius),radius,2)
 
 class Striker():
+
 	def __init__(self,screen):
 		self.striker_list = pygame.sprite.Group()
 		self.striker = Goti(blue,28,495,880)
 		self.striker_list.add(self.striker)
 		self.screen = screen
+		self.vely = 15
+	 	self.velx = 15
 
 	def update(self,state):
 		pos = pygame.mouse.get_pos()
@@ -40,6 +48,36 @@ class Striker():
 	 			self.striker.rect.centerx = 822
 	 		else:
 	 			self.striker.rect.centerx = pos[0]
+	 	elif(state==2):
+	 		
+	 		#print self.vely
+	 		#print self.velx
+	 		self.striker.rect.centerx+=self.velx
+	 		self.striker.rect.centery+=self.vely
+	 		if self.striker.rect.y > wid-border/2- 2*strikerrad:
+	 			self.striker.rect.y = wid - border/2-2*strikerrad- 1
+	 			self.vely = -1*abs(self.vely)
+	 		elif (self.striker.rect.y<border/2):
+	 			self.striker.rect.y = border/2 + 1
+	 			self.vely = abs(self.vely)
+
+	 		if self.striker.rect.x > wid-border/2-2*strikerrad:
+	 			self.striker.rect.x = wid - border/2 -2*strikerrad- 1
+	 			self.velx = -1*abs(self.velx)
+	 		elif self.striker.rect.x<border/2:
+	 			self.striker.rect.x = border/2 + 1
+	 			self.velx = abs(self.velx)
+
+	 		if mod([self.velx, self.vely])==0:
+	 			self.velx=0
+	 			self.vely=0
+	 		else:
+	 			self.velx = self.velx - friction * self.velx / mod([self.velx, self.vely])
+	 			self.vely = self.vely - friction * self.vely / mod([self.velx, self.vely])
+	 			if abs(self.velx)<friction:
+	 				self.velx=0
+	 			if abs(self.vely)<friction:
+	 				self.vely=0	
 	 	self.striker_list.draw(self.screen)
 			
 	def directStriker(self):
@@ -137,9 +175,8 @@ class CarromBoard():
 	 			elif event.type==MOUSEBUTTONDOWN and event.button == 3:
 	 				state=0
 
-
-	 			self.striker.update(state)
-	 			pygame.display.update()
+	 		self.striker.update(state)
+	 		pygame.display.update()
 	 		self.draw()
 	 		if(state==1):
 	 			self.striker.directStriker()
