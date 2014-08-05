@@ -45,9 +45,9 @@ class Striker():
 	def directStriker(self):
 		pos = pygame.mouse.get_pos()
 		if(pos[1]>860):
-			pygame.draw.lines(self.screen,red, False,[(self.striker.rect.centerx,self.striker.rect.centery),(pos[0],pos[1])],2)
+			pygame.draw.lines(self.screen,green, False,[(self.striker.rect.centerx,self.striker.rect.centery),(pos[0],pos[1])],4)
 		else:
-			pygame.draw.lines(self.screen,green, False,[(self.striker.rect.centerx,self.striker.rect.centery),(pos[0],pos[1])],2)
+			pygame.draw.lines(self.screen,red, False,[(self.striker.rect.centerx,self.striker.rect.centery),(pos[0],pos[1])],4)
 
 class CarromBoard():
 	def __init__(self, width=1000, height=1000, caption="Carrom Board"):
@@ -129,9 +129,14 @@ class CarromBoard():
 	 			if event.type==QUIT:
 	 				pygame.quit()
 	 				sys.exit()
-	 			if event.type==MOUSEBUTTONDOWN:
-	 				state=1
-	 				mouse_src = pygame.mouse.get_pos()
+	 			elif event.type==MOUSEBUTTONDOWN and event.button == 1:
+	 				if state==0:
+	 					state=1
+	 				elif state==1:
+	 					state=2
+	 			elif event.type==MOUSEBUTTONDOWN and event.button == 3:
+	 				state=0
+
 
 	 			self.striker.update(state)
 	 			pygame.display.update()
