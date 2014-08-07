@@ -106,7 +106,6 @@ class Striker():
 	 		if mod([self.velx, self.vely])==0:
 	 			self.velx=0
 	 			self.vely=0
-	 			#self.state=0
 	 			self.striker.rect.centery=880
 	 		else:
 	 			self.velx = self.velx - friction * self.velx / mod([self.velx, self.vely])
@@ -126,11 +125,22 @@ class Striker():
 
 def collideBalls(ball1,ball2):
 	#print ball1.rect.centerx
+
 	c1 = [ball1.rect.centerx, ball1.rect.centery]
 	c2 = [ball2.rect.centerx, ball2.rect.centery]
 	temp = [(c1[0]-c2[0]),(c1[1]-c2[1])]
+	
+	dist = (50 - mod(temp))/2
 	normal = [(c1[0]-c2[0])/mod(temp),(c1[1]-c2[1])/mod(temp)]
 	tangent = [-normal[1],normal[0]]
+	dist_normal = [dist*normal[0], dist*normal[1]]
+	#dist_tangent = [dist*tangent[0], dist*tangent[1]]
+	ball1.rect.centerx+=dist_normal[0]
+	ball1.rect.centery+=dist_normal[1]
+	ball2.rect.centerx-=dist_normal[0]
+	ball2.rect.centery-dist_normal[1]
+	c1 = [ball1.rect.centerx, ball1.rect.centery]
+	c2 = [ball2.rect.centerx, ball2.rect.centery]
 	ball1vel = [ball1.velx,ball1.vely]
 	ball2vel = [ball2.velx,ball2.vely]
 	ball1vel_normal = normal[0]*ball1vel[0]+normal[1]*ball1vel[1]
@@ -153,7 +163,15 @@ def collideStriker(ball1,ball2):
 	c1 = [ball1.rect.centerx, ball1.rect.centery]
 	c2 = [ball2.striker.rect.centerx, ball2.striker.rect.centery]
 	temp = [(c1[0]-c2[0]),(c1[1]-c2[1])]
+	dist = (50 - mod(temp))/2
 	normal = [(c1[0]-c2[0])/mod(temp),(c1[1]-c2[1])/mod(temp)]
+	dist_normal = [dist*normal[0], dist*normal[1]]
+	ball1.rect.centerx+=dist_normal[0]
+	ball1.rect.centery+=dist_normal[1]
+	ball2.striker.rect.centerx-=dist_normal[0]
+	ball2.striker.rect.centery-dist_normal[1]
+	c1 = [ball1.rect.centerx, ball1.rect.centery]
+	c2 = [ball2.striker.rect.centerx, ball2.striker.rect.centery]
 	tangent = [-normal[1],normal[0]]
 	ball1vel = [ball1.velx,ball1.vely]
 	ball2vel = [ball2.velx,ball2.vely]
@@ -274,7 +292,7 @@ class CarromBoard():
 
 	 		for goti1 in self.goti_list:
 	 			for goti2 in self.goti_list:
-	 				if goti1 is not goti2 and pygame.sprite.collide_circle(goti1, goti2) and not goti1.collided and not goti2.collided and self.striker.state==2:
+	 				if goti1 is not goti2 and pygame.sprite.collide_circle(goti1, goti2) and not goti1.collided and not goti2.collided:
 	 					collideBalls(goti1, goti2)
 	 					goti1.collided, goti2.collided = True, True
 
@@ -294,6 +312,7 @@ class CarromBoard():
 	 		
 	 		if stopped and self.striker.state==2:
 	 			self.striker.state = 0
+	 			print self.striker.state
 	 		clock.tick(50)
 	 		#pygame.display.flip()
 
