@@ -69,6 +69,7 @@ class Striker():
 		self.striker_list = pygame.sprite.Group()
 		self.striker = Goti(blue,28,495,880)
 		self.striker_list.add(self.striker)
+		self.player=1
 		#self.rect.centerx = self.striker.rect.centerx
 		#self.rect.centery = self.striker.rect.centery 
 		self.screen = screen
@@ -106,7 +107,8 @@ class Striker():
 	 		if mod([self.velx, self.vely])==0:
 	 			self.velx=0
 	 			self.vely=0
-	 			self.striker.rect.centery=880
+	 			#self.striker.state=0
+	 			
 	 		else:
 	 			self.velx = self.velx - friction * self.velx / mod([self.velx, self.vely])
 	 			self.vely = self.vely - friction * self.vely / mod([self.velx, self.vely])
@@ -130,7 +132,7 @@ def collideBalls(ball1,ball2):
 	c2 = [ball2.rect.centerx, ball2.rect.centery]
 	temp = [(c1[0]-c2[0]),(c1[1]-c2[1])]
 	
-	dist = (50 - mod(temp))/2
+	dist = (50 - mod(temp))/2+3
 	normal = [(c1[0]-c2[0])/mod(temp),(c1[1]-c2[1])/mod(temp)]
 	tangent = [-normal[1],normal[0]]
 	dist_normal = [dist*normal[0], dist*normal[1]]
@@ -163,7 +165,7 @@ def collideStriker(ball1,ball2):
 	c1 = [ball1.rect.centerx, ball1.rect.centery]
 	c2 = [ball2.striker.rect.centerx, ball2.striker.rect.centery]
 	temp = [(c1[0]-c2[0]),(c1[1]-c2[1])]
-	dist = (50 - mod(temp))/2
+	dist = (50 - mod(temp))/2+3
 	normal = [(c1[0]-c2[0])/mod(temp),(c1[1]-c2[1])/mod(temp)]
 	dist_normal = [dist*normal[0], dist*normal[1]]
 	ball1.rect.centerx+=dist_normal[0]
@@ -312,7 +314,15 @@ class CarromBoard():
 	 		
 	 		if stopped and self.striker.state==2:
 	 			self.striker.state = 0
+	 			if(self.striker.player==1):
+	 				self.striker.player = 2
+	 				self.striker.striker.rect.centery = 120
+	 			else:
+	 				self.striker.player = 1
+	 				self.striker.striker.rect.centery = 880
+
 	 			print self.striker.state
+
 	 		clock.tick(50)
 	 		#pygame.display.flip()
 
