@@ -120,9 +120,13 @@ class Striker():
 			
 	def directStriker(self):
 		pos = pygame.mouse.get_pos()
-		if(pos[1]>860):
+		if(pos[1]>860 and self.player==1):
 			pygame.draw.lines(self.screen,green, False,[(self.striker.rect.centerx,self.striker.rect.centery),(pos[0],pos[1])],4)
-		else:
+		elif(pos[1]<=860 and self.player==1):
+			pygame.draw.lines(self.screen,red, False,[(self.striker.rect.centerx,self.striker.rect.centery),(pos[0],pos[1])],4)
+		elif(pos[1]<100):
+			pygame.draw.lines(self.screen,green, False,[(self.striker.rect.centerx,self.striker.rect.centery),(pos[0],pos[1])],4)
+		elif(pos[1]>=100):
 			pygame.draw.lines(self.screen,red, False,[(self.striker.rect.centerx,self.striker.rect.centery),(pos[0],pos[1])],4)
 
 def collideBalls(ball1,ball2):
@@ -159,6 +163,15 @@ def collideBalls(ball1,ball2):
 	ball2.velx = normal2[0]+tangent2[0]
 	ball2.vely = normal2[1]+tangent2[1]
 	#print ball2vel
+
+def inPocket(disk):
+    distance = min(mod([disk.rect.x-2*border/3, disk.rect.y-2*border/3]),
+                mod([disk.rect.x-2*border/3, disk.rect.y-wid+2*border/3]),
+                mod([disk.rect.x-wid+2*border/3, disk.rect.y-2*border/3]),
+                mod([disk.rect.x-wid+2*border/3, disk.rect.y-wid+2*border/3]))
+    if distance<80:
+        return True
+    return False
 
 def collideStriker(ball1,ball2):
 	#print ball1.rect.centerx
@@ -300,6 +313,8 @@ class CarromBoard():
 
 	 		for goti in self.goti_list:
 	 			goti.collided = False
+	 			if inPocket(goti):
+	 				self.goti_list.remove(goti)
 	 			goti.update()
 
 	 		if self.striker.state==2:
