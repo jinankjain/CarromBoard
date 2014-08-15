@@ -123,7 +123,7 @@ class Striker():
 	 				self.velx=0
 	 			if abs(self.vely)<friction:
 	 				self.vely=0	
-	 	self.striker_list.draw(self.screen)
+	 	
 			
 	def directStriker(self):
 		pos = pygame.mouse.get_pos()
@@ -227,6 +227,7 @@ class CarromBoard():
 	 	pygame.display.set_caption(self.caption)
 	 	
 	 	self.change = True
+	 	self.striker_foul = False
 
 	 	self.goti_list=pygame.sprite.Group()
 		self.goti_list.add(Goti(black,25,500,400))
@@ -386,6 +387,7 @@ class CarromBoard():
 	 				break
 	 		
 	 		if stopped and self.striker.state==2:
+	 			self.striker_foul = False
 	 			self.striker.state = 0
 	 			if(self.striker.player==1 and self.change):
 	 				self.striker.player = 2
@@ -402,6 +404,17 @@ class CarromBoard():
 	 				self.striker.striker.rect.centery = 120
 	 				self.change = True
 
+	 		if(inPocket(self.striker.striker)):
+	 			if(self.striker.player==1 and self.score[0]>0 and not self.striker_foul):
+	 				self.score[0]-=10
+	 				self.striker_foul = True
+
+	 			elif(self.striker.player==2 and self.score[1]>0 and not self.striker_foul):
+	 				self.score[1]-=10
+	 				self.striker_foul = True
+
+	 		if(not self.striker_foul):
+	 			self.striker.striker_list.draw(self.screen)
 
 
 	 		clock.tick(50)
