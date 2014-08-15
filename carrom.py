@@ -220,6 +220,8 @@ def collideStriker(ball1,ball2):
 class CarromBoard():
 	def __init__(self, width=1500, height=1000, caption="Carrom Board"):
 		pygame.init()
+		self.sound = pygame.mixer.Sound("gotoholes.ogg")
+		self.collide_sound = pygame.mixer.Sound("collide.ogg")
 		self.width, self.height, self.caption = width, height, caption
 		self.screen=pygame.display.set_mode((self.width, self.height))
 	 	pygame.display.set_caption(self.caption)
@@ -354,11 +356,13 @@ class CarromBoard():
 	 			for goti2 in self.goti_list:
 	 				if goti1 is not goti2 and pygame.sprite.collide_circle(goti1, goti2) and not goti1.collided and not goti2.collided:
 	 					collideBalls(goti1, goti2)
+	 					self.collide_sound.play()
 	 					goti1.collided, goti2.collided = True, True
 
 	 		for goti in self.goti_list:
 	 			goti.collided = False
 	 			if inPocket(goti):
+	 				self.sound.play()
 	 				if(goti.color==black):
 	 					self.score[0]+=10
 	 				elif(goti.color==yellow2):
@@ -369,6 +373,7 @@ class CarromBoard():
 	 		if self.striker.state==2:
 	 			for goti in self.goti_list:
 	 				if pygame.sprite.collide_circle(goti, self.striker.striker):
+	 					self.collide_sound.play()
 	 					collideStriker(goti,self.striker)
 	 		stopped = True
 	 		for goti in self.goti_list:
