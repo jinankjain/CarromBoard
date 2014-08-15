@@ -226,6 +226,8 @@ class CarromBoard():
 		self.screen=pygame.display.set_mode((self.width, self.height))
 	 	pygame.display.set_caption(self.caption)
 	 	
+	 	self.change = True
+
 	 	self.goti_list=pygame.sprite.Group()
 		self.goti_list.add(Goti(black,25,500,400))
 		self.goti_list.add(Goti(black,25,585,450))
@@ -362,6 +364,8 @@ class CarromBoard():
 	 		for goti in self.goti_list:
 	 			goti.collided = False
 	 			if inPocket(goti):
+	 				if(self.change):
+	 					self.change = False
 	 				self.sound.play()
 	 				if(goti.color==black):
 	 					self.score[0]+=10
@@ -383,14 +387,22 @@ class CarromBoard():
 	 		
 	 		if stopped and self.striker.state==2:
 	 			self.striker.state = 0
-	 			if(self.striker.player==1):
+	 			if(self.striker.player==1 and self.change):
 	 				self.striker.player = 2
 	 				self.striker.striker.rect.centery = 120
-	 			else:
+	 			elif(self.striker.player==2 and self.change):
 	 				self.striker.player = 1
 	 				self.striker.striker.rect.centery = 880
+	 			elif(self.striker.player==1 and not self.change):
+	 				self.striker.player = 1
+	 				self.striker.striker.rect.centery = 880
+	 				self.change = True
+	 			else:
+	 				self.striker.player = 2
+	 				self.striker.striker.rect.centery = 120
+	 				self.change = True
 
-	 			print self.striker.state
+
 
 	 		clock.tick(50)
 	 		#pygame.display.flip()
