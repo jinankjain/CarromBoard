@@ -1,6 +1,11 @@
+# Author Jinank Jain
+# Developed using PyGame Library
+
 import pygame, sys
 from pygame.locals import *
 import math
+import tkMessageBox
+
 
 red=(255,0,0)
 blue=(0,0,255)
@@ -16,6 +21,9 @@ wid = 1000
 strikerrad = 28
 gotirad = 25
 border = 50
+pi=3.14
+#for converting to radian
+rad=pi/180
 
 
 mod = lambda v: math.sqrt(v[0] * v[0] + v[1] * v[1])
@@ -25,6 +33,7 @@ class Goti(pygame.sprite.Sprite):
 		pygame.sprite.Sprite.__init__(self)
 		self.image = pygame.Surface([2*radius, 2*radius])
 		self.image.fill(yellow)
+		self.color = color
 		self.image.set_colorkey(yellow)
 		self.rect = self.image.get_rect()
 		self.rect.x = x-radius
@@ -65,20 +74,18 @@ class Goti(pygame.sprite.Sprite):
 
 class Striker():
 
-	def __init__(self,screen):
+	def __init__(self,screen,goti_list):
 		self.striker_list = pygame.sprite.Group()
 		self.striker = Goti(blue,28,495,880)
 		self.striker_list.add(self.striker)
 		self.player=1
-		#self.rect.centerx = self.striker.rect.centerx
-		#self.rect.centery = self.striker.rect.centery 
 		self.screen = screen
 		self.vely = 5
 	 	self.velx = 15
 	 	self.state=0
+	 	self.goti_list = goti_list
 
 	def update(self):
-		#print self.state
 		pos = pygame.mouse.get_pos()
 		if(self.state==0):
 	 		if(pos[0]<168):
@@ -147,6 +154,9 @@ def collideBalls(ball1,ball2):
 	ball2.rect.centery-dist_normal[1]
 	c1 = [ball1.rect.centerx, ball1.rect.centery]
 	c2 = [ball2.rect.centerx, ball2.rect.centery]
+	temp = [(c1[0]-c2[0]),(c1[1]-c2[1])]
+	normal = [(c1[0]-c2[0])/mod(temp),(c1[1]-c2[1])/mod(temp)]
+	tangent = [-normal[1],normal[0]]
 	ball1vel = [ball1.velx,ball1.vely]
 	ball2vel = [ball2.velx,ball2.vely]
 	ball1vel_normal = normal[0]*ball1vel[0]+normal[1]*ball1vel[1]
@@ -169,7 +179,7 @@ def inPocket(disk):
                 mod([disk.rect.x-2*border/3, disk.rect.y-wid+2*border/3]),
                 mod([disk.rect.x-wid+2*border/3, disk.rect.y-2*border/3]),
                 mod([disk.rect.x-wid+2*border/3, disk.rect.y-wid+2*border/3]))
-    if distance<80:
+    if distance<60:
         return True
     return False
 
@@ -178,7 +188,7 @@ def collideStriker(ball1,ball2):
 	c1 = [ball1.rect.centerx, ball1.rect.centery]
 	c2 = [ball2.striker.rect.centerx, ball2.striker.rect.centery]
 	temp = [(c1[0]-c2[0]),(c1[1]-c2[1])]
-	dist = (50 - mod(temp))/2+3
+	dist = (53 - mod(temp))/2+3
 	normal = [(c1[0]-c2[0])/mod(temp),(c1[1]-c2[1])/mod(temp)]
 	dist_normal = [dist*normal[0], dist*normal[1]]
 	ball1.rect.centerx+=dist_normal[0]
@@ -187,6 +197,8 @@ def collideStriker(ball1,ball2):
 	ball2.striker.rect.centery-dist_normal[1]
 	c1 = [ball1.rect.centerx, ball1.rect.centery]
 	c2 = [ball2.striker.rect.centerx, ball2.striker.rect.centery]
+	temp = [(c1[0]-c2[0]),(c1[1]-c2[1])]
+	normal = [(c1[0]-c2[0])/mod(temp),(c1[1]-c2[1])/mod(temp)]
 	tangent = [-normal[1],normal[0]]
 	ball1vel = [ball1.velx,ball1.vely]
 	ball2vel = [ball2.velx,ball2.vely]
@@ -206,12 +218,12 @@ def collideStriker(ball1,ball2):
 	#print ball2vel
 
 class CarromBoard():
-	def __init__(self, width=1000, height=1000, caption="Carrom Board"):
+	def __init__(self, width=1500, height=1000, caption="Carrom Board"):
 		pygame.init()
 		self.width, self.height, self.caption = width, height, caption
 		self.screen=pygame.display.set_mode((self.width, self.height))
 	 	pygame.display.set_caption(self.caption)
-	 	self.striker = Striker(self.screen)
+	 	
 	 	self.goti_list=pygame.sprite.Group()
 		self.goti_list.add(Goti(black,25,500,400))
 		self.goti_list.add(Goti(black,25,585,450))
@@ -232,13 +244,15 @@ class CarromBoard():
 		self.goti_list.add(Goti(yellow2,25,543,575))
 		self.goti_list.add(Goti(yellow2,25,543,525))
 		self.goti_list.add(Goti(pink,25,500,500))
+		self.striker = Striker(self.screen,self.goti_list)
+		self.score = [0,0]
 		self.draw()
 
 	
 	def draw(self):
 		self.screen.fill(yellow)
 		#side border
-		pygame.draw.rect(self.screen,wooden,(0,0,self.width,self.height),50)
+		pygame.draw.rect(self.screen,wooden,(0,0,self.width-500,self.height),50)
 		
 		#up and down lines and circles
 		pygame.draw.lines(self.screen, black, False, [(160,100),(830,100)],2)
@@ -274,6 +288,33 @@ class CarromBoard():
 		pygame.draw.circle(self.screen, black, (47,953), 30)
 		pygame.draw.circle(self.screen, black, (953,953), 30)
 
+		#Developers Note
+		myfont = pygame.font.SysFont("Comic Sans MS", 50)
+		myfont1 = pygame.font.SysFont("Comic Sans MS", 25)
+		label = myfont.render("Scoring", 1, black)
+		player1 = myfont.render("Player 1: "+str(self.score[0]), 1, black)
+		player2 = myfont.render("Player 2: "+str(self.score[1]), 1, black)
+		dev1 = myfont1.render("This game was developed as course project for", 1, black)
+		dev2 = myfont1.render("Software Engineering under Dr. Gaurav Harit", 1, black)
+		self.screen.blit(label, (1200, 100))
+		self.screen.blit(player1, (1100,190))
+		self.screen.blit(player2, (1100,250))
+		self.screen.blit(dev1, (1070,900))
+		self.screen.blit(dev2, (1080,930))
+		
+		#four arrows
+		pygame.draw.lines(self.screen, black, False, [(120,120),(270,270)],3)
+		pygame.draw.lines(self.screen, black, False, [(870,120),(720,270)],3)
+		pygame.draw.lines(self.screen, black, False, [(120,870),(270,720)],3)
+		pygame.draw.lines(self.screen, black, False, [(870,870),(720,720)],3)
+
+		#four arcs of arrows
+		# pygame.draw.arc(self.screen, black, Rect, math.pi/2, math.3pi/4, width=1)
+		pygame.draw.arc(self.screen,black,(185,185,100,100),-180*rad,90*rad,2)
+		pygame.draw.arc(self.screen,black,(700,185,100,100), 90*rad,360*rad,2)
+		pygame.draw.arc(self.screen,black,(190,700,100,100), -90*rad,180*rad,2)
+		pygame.draw.arc(self.screen,black,(700,700,100,100),0,270*rad,2)
+
 		
 		
 		self.goti_list.draw(self.screen)
@@ -290,6 +331,10 @@ class CarromBoard():
 	 			elif event.type==MOUSEBUTTONDOWN and event.button == 1:
 	 				if self.striker.state==0:
 	 					self.striker.state=1
+	 					for goti in self.goti_list:
+	 						if pygame.sprite.collide_circle(goti, self.striker.striker):
+	 							self.striker.state=0
+	 							tkMessageBox.showinfo(title="Alert", message="Invalid Position to move")
 	 				elif self.striker.state==1:
 	 					self.striker.state=2
 	 					pos = pygame.mouse.get_pos()
@@ -314,6 +359,10 @@ class CarromBoard():
 	 		for goti in self.goti_list:
 	 			goti.collided = False
 	 			if inPocket(goti):
+	 				if(goti.color==black):
+	 					self.score[0]+=10
+	 				elif(goti.color==yellow2):
+	 					self.score[1]+=10
 	 				self.goti_list.remove(goti)
 	 			goti.update()
 
