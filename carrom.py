@@ -80,8 +80,8 @@ class Striker():
 		self.striker_list.add(self.striker)
 		self.player=1
 		self.screen = screen
-		self.vely = 5
-	 	self.velx = 15
+		self.vely = 0
+	 	self.velx = 0
 	 	self.state=0
 	 	self.goti_list = goti_list
 
@@ -114,7 +114,6 @@ class Striker():
 	 		if mod([self.velx, self.vely])==0:
 	 			self.velx=0
 	 			self.vely=0
-	 			#self.striker.state=0
 	 			
 	 		else:
 	 			self.velx = self.velx - friction * self.velx / mod([self.velx, self.vely])
@@ -137,17 +136,15 @@ class Striker():
 			pygame.draw.lines(self.screen,red, False,[(self.striker.rect.centerx,self.striker.rect.centery),(pos[0],pos[1])],4)
 
 def collideBalls(ball1,ball2):
-	#print ball1.rect.centerx
 
 	c1 = [ball1.rect.centerx, ball1.rect.centery]
 	c2 = [ball2.rect.centerx, ball2.rect.centery]
 	temp = [(c1[0]-c2[0]),(c1[1]-c2[1])]
 	
-	dist = (50 - mod(temp))/2+3
+	dist = (46 - mod(temp))/2+3
 	normal = [(c1[0]-c2[0])/mod(temp),(c1[1]-c2[1])/mod(temp)]
 	tangent = [-normal[1],normal[0]]
 	dist_normal = [dist*normal[0], dist*normal[1]]
-	#dist_tangent = [dist*tangent[0], dist*tangent[1]]
 	ball1.rect.centerx+=dist_normal[0]
 	ball1.rect.centery+=dist_normal[1]
 	ball2.rect.centerx-=dist_normal[0]
@@ -184,11 +181,10 @@ def inPocket(disk):
     return False
 
 def collideStriker(ball1,ball2):
-	#print ball1.rect.centerx
 	c1 = [ball1.rect.centerx, ball1.rect.centery]
 	c2 = [ball2.striker.rect.centerx, ball2.striker.rect.centery]
 	temp = [(c1[0]-c2[0]),(c1[1]-c2[1])]
-	dist = (53 - mod(temp))/2+3
+	dist = (51 - mod(temp))/2+3
 	normal = [(c1[0]-c2[0])/mod(temp),(c1[1]-c2[1])/mod(temp)]
 	dist_normal = [dist*normal[0], dist*normal[1]]
 	ball1.rect.centerx+=dist_normal[0]
@@ -215,7 +211,6 @@ def collideStriker(ball1,ball2):
 	ball1.vely = normal1[1]+tangent1[1]
 	ball2.velx = normal2[0]+tangent2[0]
 	ball2.vely = normal2[1]+tangent2[1]
-	#print ball2vel
 
 class CarromBoard():
 	def __init__(self, width=1500, height=1000, caption="Carrom Board"):
@@ -228,27 +223,30 @@ class CarromBoard():
 	 	
 	 	self.change = True
 	 	self.striker_foul = False
+	 	self.count=0
+	 	self.pocketed=0
+	 	self.game_over = False
 
 	 	self.goti_list=pygame.sprite.Group()
-		self.goti_list.add(Goti(black,25,500,400))
-		self.goti_list.add(Goti(black,25,585,450))
-		self.goti_list.add(Goti(black,25,412,450))
-		self.goti_list.add(Goti(black,25,457,475))
-		self.goti_list.add(Goti(black,25,500,600))
-		self.goti_list.add(Goti(black,25,500,550))
-		self.goti_list.add(Goti(black,25,587,550))
-		self.goti_list.add(Goti(black,25,414,552))
-		self.goti_list.add(Goti(black,25,542,425))
-		self.goti_list.add(Goti(yellow2,25,590,500))
-		self.goti_list.add(Goti(yellow2,25,410,500))
-		self.goti_list.add(Goti(yellow2,25,500,450))
-		self.goti_list.add(Goti(yellow2,25,543,475))
-		self.goti_list.add(Goti(yellow2,25,457,525))
-		self.goti_list.add(Goti(yellow2,25,457,425))
-		self.goti_list.add(Goti(yellow2,25,457,575))
-		self.goti_list.add(Goti(yellow2,25,543,575))
-		self.goti_list.add(Goti(yellow2,25,543,525))
-		self.goti_list.add(Goti(pink,25,500,500))
+		self.goti_list.add(Goti(black,23,500,400))
+		self.goti_list.add(Goti(black,23,585,450))
+		self.goti_list.add(Goti(black,23,412,450))
+		self.goti_list.add(Goti(black,23,457,475))
+		self.goti_list.add(Goti(black,23,500,600))
+		self.goti_list.add(Goti(black,23,500,550))
+		self.goti_list.add(Goti(black,23,587,550))
+		self.goti_list.add(Goti(black,23,414,552))
+		self.goti_list.add(Goti(black,23,542,425))
+		self.goti_list.add(Goti(yellow2,23,590,500))
+		self.goti_list.add(Goti(yellow2,23,410,500))
+		self.goti_list.add(Goti(yellow2,23,500,450))
+		self.goti_list.add(Goti(yellow2,23,543,475))
+		self.goti_list.add(Goti(yellow2,23,457,525))
+		self.goti_list.add(Goti(yellow2,23,457,425))
+		self.goti_list.add(Goti(yellow2,23,457,575))
+		self.goti_list.add(Goti(yellow2,23,543,575))
+		self.goti_list.add(Goti(yellow2,23,543,525))
+		self.goti_list.add(Goti(pink,23,500,500))
 		self.striker = Striker(self.screen,self.goti_list)
 		self.score = [0,0]
 		self.draw()
@@ -293,20 +291,49 @@ class CarromBoard():
 		pygame.draw.circle(self.screen, black, (47,953), 30)
 		pygame.draw.circle(self.screen, black, (953,953), 30)
 
+		vel1=0
+		vel2=0
+		vel = [self.striker.velx, self.striker.vely]
+		if(self.striker.player==1):
+			vel1 = mod(vel)
+			vel2 = 0
+		else:
+			vel2 = mod(vel)
+			vel1 = 0
+
+
 		#Developers Note
 		myfont = pygame.font.SysFont("Comic Sans MS", 50)
 		myfont1 = pygame.font.SysFont("Comic Sans MS", 25)
+		myfont2 = pygame.font.SysFont("Comic Sans MS", 30)
 		label = myfont.render("Scoring", 1, black)
 		player1 = myfont.render("Player 1: "+str(self.score[0]), 1, black)
 		player2 = myfont.render("Player 2: "+str(self.score[1]), 1, black)
+		vital_stats = myfont2.render("Some Vital Stats about the moves", 1, black)
+		vel_play1 = myfont2.render("Player1 Strike Velocity: "+str(vel1), 1, black)
+		vel_play2 = myfont2.render("Player2 Strike Velocity: "+str(vel2), 1, black)
 		dev1 = myfont1.render("This game was developed as course project for", 1, black)
 		dev2 = myfont1.render("Software Engineering under Dr. Gaurav Harit", 1, black)
 		self.screen.blit(label, (1200, 100))
+		self.screen.blit(vital_stats, (1100, 400))
+		self.screen.blit(vel_play1, (1100, 450))
+		self.screen.blit(vel_play2, (1100, 500))
 		self.screen.blit(player1, (1100,190))
 		self.screen.blit(player2, (1100,250))
 		self.screen.blit(dev1, (1070,900))
 		self.screen.blit(dev2, (1080,930))
-		
+
+		#game_over
+		if(self.game_over):
+			gameOver = myfont.render("Game Over", 1, black)
+			self.screen.blit(gameOver, (1175, 600))
+			if(self.score[0]>self.score[1]):
+				winner = myfont.render("Player 1 wins", 1, black)
+				self.screen.blit(winner, (1160, 650))
+			elif(self.score[0]<self.score[1]):
+				winner = myfont.render("Player 2 wins", 1, black)
+				self.screen.blit(winner, (1175, 700))
+
 		#four arrows
 		pygame.draw.lines(self.screen, black, False, [(120,120),(270,270)],3)
 		pygame.draw.lines(self.screen, black, False, [(870,120),(720,270)],3)
@@ -365,6 +392,7 @@ class CarromBoard():
 	 		for goti in self.goti_list:
 	 			goti.collided = False
 	 			if inPocket(goti):
+	 				self.pocketed=1
 	 				if(self.change):
 	 					self.change = False
 	 				self.sound.play()
@@ -373,7 +401,18 @@ class CarromBoard():
 	 				elif(goti.color==yellow2):
 	 					self.score[1]+=10
 	 				self.goti_list.remove(goti)
+	 				if(goti.color==pink):
+	 					self.count=1
+	 				elif(self.count==1 and not self.change):
+	 					if(goti.color==black):
+	 						self.score[0]+=50
+	 						self.count=0
+	 					elif(goti.color==yellow2):
+	 						self.score[1]+=50
+	 						self.count=0
 	 			goti.update()
+
+
 
 	 		if self.striker.state==2:
 	 			for goti in self.goti_list:
@@ -389,6 +428,10 @@ class CarromBoard():
 	 		if stopped and self.striker.state==2:
 	 			self.striker_foul = False
 	 			self.striker.state = 0
+	 			if(self.count==1 and self.pocketed==0):
+	 				self.goti_list.add(Goti(pink,25,500,500))
+	 				self.count=0
+	 			self.pocketed=0
 	 			if(self.striker.player==1 and self.change):
 	 				self.striker.player = 2
 	 				self.striker.striker.rect.centery = 120
@@ -406,15 +449,26 @@ class CarromBoard():
 
 	 		if(inPocket(self.striker.striker)):
 	 			if(self.striker.player==1 and self.score[0]>0 and not self.striker_foul):
+	 				self.goti_list.add(Goti(black,25,500,400))
 	 				self.score[0]-=10
+	 				self.striker.velx = 0
+	 				self.striker.vely = 0
 	 				self.striker_foul = True
 
 	 			elif(self.striker.player==2 and self.score[1]>0 and not self.striker_foul):
+	 				self.goti_list.add(Goti(yellow2,25,500,400))
 	 				self.score[1]-=10
+	 				self.striker.velx = 0
+	 				self.striker.vely = 0
 	 				self.striker_foul = True
 
 	 		if(not self.striker_foul):
 	 			self.striker.striker_list.draw(self.screen)
+
+	 		if(not self.goti_list):
+	 			self.striker.velx = 0
+	 			self.striker.vely = 0
+	 			self.game_over = True
 
 
 	 		clock.tick(50)
